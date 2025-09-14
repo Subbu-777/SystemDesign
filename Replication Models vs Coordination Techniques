@@ -1,0 +1,22 @@
+# Replication Models vs Coordination Techniques
+
+---
+
+## 🔹 Key Differences
+
+| Aspect | Replication Models | Coordination Techniques |
+|--------|--------------------|--------------------------|
+| **Definition** | High-level *architectural strategies* for how data is replicated and distributed across nodes. | Lower-level *operational protocols* that enforce ordering, consistency, and reliability of replication. |
+| **Focus** | *Where* and *how* data flows between machines (the topology). | *How* replicas stay in sync and agree on the same state (the protocol). |
+| **Abstraction Level** | More conceptual/structural (blueprints). | More technical/algorithmic (protocols). |
+| **Examples** | - Leader-Follower (Master-Slave) <br> - Multi-Leader (Master-Master) <br> - Leaderless Replication <br> - Chain Replication | - Transactional Replication <br> - State Machine Replication (SMR) <br> - Virtual Synchrony |
+| **What It Solves** | Performance, fault tolerance, topology design, data distribution. | Consistency guarantees, ordering of operations, fault handling during updates. |
+| **Analogy** | Like deciding the *road layout* of a city (grid, ring road, hub-spoke). | Like deciding the *traffic rules* (signals, right of way, stop signs) that keep traffic consistent and safe. |
+| **Usage Together** | A database may use a **Leader-Follower model** (architecture) and implement **State Machine Replication** (protocol) to ensure all replicas apply updates in the same order. |
+
+---
+
+## 🔹 In Short
+
+- **Replication Models** = *Architectural blueprints* → define the structure/topology of replication.  
+- **Coordination Techniques** = *Operational protocols* → define the rules for keeping replicas consistent.  
