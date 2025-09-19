@@ -44,3 +44,33 @@ class OrderService {
         repo.save(order);  // directly depends on low-level detail
     }
 }
+
+#Good Design
+
+interface OrderRepository {
+    void save(Order order);
+}
+
+class MySQLDatabaseRepository implements OrderRepository {
+    public void save(Order order) {
+        // MySQL specific save
+    }
+}
+
+class MongoDBRepository implements OrderRepository {
+    public void save(Order order) {
+        // MongoDB specific save
+    }
+}
+
+class OrderService {
+    private final OrderRepository repo;
+
+    public OrderService(OrderRepository repo) {
+        this.repo = repo;   // depends on abstraction
+    }
+
+    public void placeOrder(Order order) {
+        repo.save(order);   // doesn’t care about implementation
+    }
+}
