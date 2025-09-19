@@ -45,8 +45,9 @@ class OrderService {
     }
 }
 
-#Good Design
-
+---
+##Good Design
+'''java
 interface OrderRepository {
     void save(Order order);
 }
