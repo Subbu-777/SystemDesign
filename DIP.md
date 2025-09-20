@@ -45,7 +45,8 @@ class OrderService {
     }
 }
 
-'''
+```
+
 ##Good Design
 '''java
 interface OrderRepository {
