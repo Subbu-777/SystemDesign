@@ -46,6 +46,7 @@ class OrderService {
 }
 
 ```
+---
 
 ##Good Design
 '''java
