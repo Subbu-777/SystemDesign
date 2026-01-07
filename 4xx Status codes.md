@@ -3,7 +3,19 @@ HTTP 4XX Status Codes – Scenarios & Answers
 This file contains realistic API scenarios, the correct 4xx status codes, and explanations.
 Ideal for interview prep, API design discussions, or self-testing.
 
+# HTTP 4XX Status Codes – Cheat Sheet (Industry Focused)
 
+| Status | Name | When to Use | Memory Hint | Example |
+|--------|------|------------|------------|---------|
+| 400 | Bad Request | Request cannot be parsed / missing fields / wrong type | Syntax / structure wrong | Malformed JSON, missing `accountId` |
+| 401 | Unauthorized | Authentication missing / invalid | “Who are you?” | No JWT / invalid token |
+| 403 | Forbidden | Authenticated but not allowed | “You can’t do this” | User trying to delete admin resource |
+| 404 | Not Found | Resource does not exist | “Nothing here” | GET `/user/9999` |
+| 405 | Method Not Allowed | Wrong HTTP method on endpoint | “Wrong verb” | GET on POST-only API |
+| 409 | Conflict | Request conflicts with server state | “State conflict” | Duplicate email, stale version update |
+| 422 | Unprocessable Entity | Request syntax OK but value violates business/validation rules | Invalid value / rule violation | Field `mode` = C instead of A/B, withdrawal > balance |
+| 429 | Too Many Requests | Client exceeded rate limit | “Slow down” | 1000 requests/min when limit is 100 |
+| 408 | Request Timeout | Client took too long to send request | Client too slow | Slow upload stalled |
 ---
 
 Scenario 1
@@ -117,33 +129,3 @@ Explanation: Client-side delay; request not fully received in time.
 
 ---
 
-Quick Reference Table
-
-Status	When to use
-
-400	Bad request: syntax / missing fields
-401	Unauthorized: missing / invalid authentication
-403	Forbidden: authenticated but not allowed
-404	Not Found: resource does not exist
-405	Method Not Allowed: invalid HTTP method
-409	Conflict: request conflicts with server state
-422	Unprocessable Entity: validation / semantic errors
-429	Too Many Requests: rate limiting exceeded
-408	Request Timeout: client too slow
-
-
-
----
-# HTTP 4XX Status Codes – Cheat Sheet (Industry Focused)
-
-| Status | Name | When to Use | Memory Hint | Example |
-|--------|------|------------|------------|---------|
-| 400 | Bad Request | Request cannot be parsed / missing fields / wrong type | Syntax / structure wrong | Malformed JSON, missing `accountId` |
-| 401 | Unauthorized | Authentication missing / invalid | “Who are you?” | No JWT / invalid token |
-| 403 | Forbidden | Authenticated but not allowed | “You can’t do this” | User trying to delete admin resource |
-| 404 | Not Found | Resource does not exist | “Nothing here” | GET `/user/9999` |
-| 405 | Method Not Allowed | Wrong HTTP method on endpoint | “Wrong verb” | GET on POST-only API |
-| 409 | Conflict | Request conflicts with server state | “State conflict” | Duplicate email, stale version update |
-| 422 | Unprocessable Entity | Request syntax OK but value violates business/validation rules | Invalid value / rule violation | Field `mode` = C instead of A/B, withdrawal > balance |
-| 429 | Too Many Requests | Client exceeded rate limit | “Slow down” | 1000 requests/min when limit is 100 |
-| 408 | Request Timeout | Client took too long to send request | Client too slow | Slow upload stalled |
