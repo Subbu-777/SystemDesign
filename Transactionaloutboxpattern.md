@@ -19,9 +19,9 @@ BEGIN TRANSACTION
   UPDATE orders SET status = 'PAID', updated_at = NOW() WHERE id = ?
   kafkaTemplate.send("order-events", orderId, OrderPaidEvent(...))
 COMMIT
---
+---
 
-Failure modes that break consistency:DB commits → message publish fails / broker is down → lost event
+## Failure modes that break Failure:DB commits → message publish fails / broker is down → lost event
 Message sent → DB rollback / crash → phantom event (downstream thinks something happened that didn't)
 
 Distributed transactions (2PC) are usually not an option because:many brokers (Kafka before exactly-once producers, most queues) don't support them
