@@ -56,7 +56,7 @@ sequenceDiagram
     API->>DB: GetItem
     DB-->>API: Current status
     API-->>Client: Response with status
----
+--
 
 
 # Idempotent Consumer Pattern with Conditional Writes
