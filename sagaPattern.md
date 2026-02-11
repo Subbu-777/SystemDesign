@@ -33,6 +33,7 @@ A saga is a **sequence of local transactions** where:
 Services communicate only via events.  
 No central coordinator.
 
+'''
 Order Service             Inventory Service          Payment Service           Shipping Service
      │                             │                        │                        │
 Create Order (local tx)           │                        │                        │
@@ -49,7 +50,40 @@ Release stock (compensate)                                 │                  
      │                             │                        │                        │
      └─ OrderCancelled ──────────────────────────────────────────────────────────────┘
      Cancel order (compensate)
+'''
+sequenceDiagram
+    participant Order as Order Service
+    participant Inventory as Inventory Service
+    participant Payment as Payment Service
+    participant Shipping as Shipping Service
+    participant Broker as Event Broker<br>(Kafka / RabbitMQ / ...)
 
+    Note over Order,Shipping: Happy path + failure + compensation
+
+    Order->>Order: Create order<br>(local transaction)
+    Order->>Broker: OrderCreated
+
+    Broker->>Inventory: OrderCreated
+    Inventory->>Inventory: Reserve items<br>(local transaction)
+    Inventory->>Broker: InventoryReserved
+
+    Broker->>Payment: InventoryReserved
+    Payment->>Payment: Charge customer<br>(local transaction) → **fails**
+    Payment->>Broker: PaymentFailed
+
+    Broker->>Inventory: PaymentFailed
+    Inventory->>Inventory: Release items (compensate)
+    Inventory->>Broker: InventoryReleased   (optional event)
+
+    Broker->>Order: PaymentFailed
+    Order->>Order: Cancel order (compensate)
+    Order->>Broker: OrderCancelled          (optional)
+
+    alt Optional – Shipping never started
+        Note right of Shipping: Shipping service never receives event
+    end
+
+    
 
 **Advantages**
 - loosely coupled
