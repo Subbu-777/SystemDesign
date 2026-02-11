@@ -136,7 +136,40 @@ One dedicated component (orchestrator / saga executor) tells each service what t
               │    Order Service     │
               └──────────────────────┘
 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Orchestrator as Saga Orchestrator
+    participant OrderSvc as Order Service
+    participant InventorySvc as Inventory Service
+    participant PaymentSvc as Payment Service
 
+    Client->>Orchestrator: StartOrderSaga<br>(order details)
+
+    Orchestrator->>OrderSvc: CreateOrderCommand
+    OrderSvc->>OrderSvc: Create order (local tx)
+    OrderSvc-->>Orchestrator: OrderCreated (success)
+
+    Orchestrator->>InventorySvc: ReserveInventoryCommand
+    InventorySvc->>InventorySvc: Reserve stock (local tx)
+    InventorySvc-->>Orchestrator: InventoryReserved (success)
+
+    Orchestrator->>PaymentSvc: ChargePaymentCommand
+    PaymentSvc->>PaymentSvc: Charge card (local tx)
+    alt Payment succeeds
+        PaymentSvc-->>Orchestrator: PaymentSucceeded
+        Orchestrator->>Client: OrderSagaCompleted (success)
+    else Payment fails
+        PaymentSvc-->>Orchestrator: PaymentFailed
+        Orchestrator->>InventorySvc: ReleaseInventoryCommand (compensate)
+        InventorySvc->>InventorySvc: Release stock (compensate tx)
+        InventorySvc-->>Orchestrator: InventoryReleased
+        Orchestrator->>OrderSvc: CancelOrderCommand (compensate)
+        OrderSvc->>OrderSvc: Cancel order (compensate tx)
+        OrderSvc-->>Orchestrator: OrderCancelled
+        Orchestrator->>Client: OrderSagaFailed (with reason)
+    end
+```
 
 **Advantages**
 - easier to understand & visualize the entire process
