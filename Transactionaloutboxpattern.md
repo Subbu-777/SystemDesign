@@ -19,6 +19,7 @@ BEGIN TRANSACTION
   UPDATE orders SET status = 'PAID', updated_at = NOW() WHERE id = ?
   kafkaTemplate.send("order-events", orderId, OrderPaidEvent(...))
 COMMIT
+
 ---
 
 ## Failure modes that break Failure:DB commits → message publish fails / broker is down → lost event
