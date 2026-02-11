@@ -50,7 +50,7 @@ Release stock (compensate)                                 │                  
      │                             │                        │                        │
      └─ OrderCancelled ──────────────────────────────────────────────────────────────┘
      Cancel order (compensate)
-'''
+'''mermaid
 sequenceDiagram
     participant Order as Order Service
     participant Inventory as Inventory Service
@@ -82,7 +82,7 @@ sequenceDiagram
     alt Optional – Shipping never started
         Note right of Shipping: Shipping service never receives event
     end
-
+'''
     
 
 **Advantages**
