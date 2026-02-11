@@ -58,26 +58,26 @@ sequenceDiagram
         end
     end
 
-Key ComponentsComponent
-Description
-Examples
-Outbox Table
-Table/collection to store messages to send (payload serialized as JSON)
-outbox_events (id, type, aggregate_id, payload, created_at, status)
-Business Transaction
-Atomic DB write: business change + insert to outbox
-JPA @Transactional
-, Spring @Transactional
 
-Relay / Poller
-Background process that reads outbox and publishes
-Custom poller, Debezium CDC, Maxwell, Kafka Connect JDBC
-Idempotency
-Consumers must be idempotent (at-least-once delivery possible)
-Deduplication by event ID / aggregate version
-Exactly-once semantics
-Not guaranteed end-to-end — at-least-once + idempotent consumers ≈ exactly-once effect
-Combine with Idempotent Consumer pattern
+# Transactional Outbox Pattern – Key Components
+
+| Component              | Purpose / Responsibility                                                                 | Typical Implementation / Examples                          | Important Notes / Requirements                          |
+|------------------------|------------------------------------------------------------------------------------------|------------------------------------------------------------|----------------------------------------------------------|
+| **Business Logic**     | Performs the core domain operation (create/update entity)                                | Service layer, controller, use-case/handler                | Must run inside a transaction                            |
+| **Database Transaction** | Atomically commits both business change + outbox message insertion                      | ACID transaction (SQL: BEGIN/COMMIT, DynamoDB Transact*)   | Single local transaction – no 2PC                        |
+| **Outbox Table / Collection** | Persistent queue for events that need to be published                                   | Relational: `outbox` table<br>NoSQL: dedicated item/stream | Fields: id, event_type, aggregate_id, payload, status, created_at |
+| **Event Payload**      | Serialized representation of the domain event                                            | JSON / JSONB / Avro / Protobuf                             | Should include event ID, version, timestamp, metadata   |
+| **Relay / Publisher / Poller** | Reads unsent events from outbox and sends them to the message broker                    | - Scheduled job / cron<br>- Debezium Outbox Router<br>- DynamoDB Streams → Lambda<br>- Kafka Connect | Runs independently, can retry, should be highly available |
+| **Message Broker**     | Durable, distributed destination for events                                             | Kafka, RabbitMQ, AWS SQS/SNS, Azure Service Bus, Redis Streams | Must support at-least-once delivery                     |
+| **Consumer(s)**        | Downstream services that react to the events                                             | Other microservices, read models, notifications, etc.      | **Must be idempotent** (critical requirement)            |
+| **Status / Tracking**  | Tracks whether an outbox entry has been published (PENDING → SENT / FAILED)             | Column: `status`, `published_at`, `attempts`               | Optional: dead-letter logic for permanent failures       |
+| **Cleanup Mechanism**  | Prevents outbox table from growing indefinitely                                         | TTL, scheduled DELETE, archive job                         | Usually delete after SENT + X days                       |
+
+### Quick Summary – Core Guarantee
+
+Everything inside the **business transaction** is atomic → either both the state change **and** the outbox message are saved, or neither is.
+
+The relay takes care of the **eventual** publishing → giving you reliable at-least-once delivery without coupling the critical path to the broker.
 
 Pros & ConsAdvantagesAtomicity without 2PC / distributed transactions
 Works with any DB that supports ACID transactions
