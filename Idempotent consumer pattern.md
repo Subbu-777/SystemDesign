@@ -56,6 +56,9 @@ sequenceDiagram
     API->>DB: GetItem
     DB-->>API: Current status
     API-->>Client: Response with status
+---
+
+
 # Idempotent Consumer Pattern with Conditional Writes
 
 The pattern used in your payment/queue system — where a **single persistent record** (for an order, transaction, or payment intent) is:
