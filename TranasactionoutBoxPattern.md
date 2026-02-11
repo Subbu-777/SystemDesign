@@ -18,10 +18,8 @@ BEGIN TRANSACTION
   UPDATE orders SET status = 'CREATED' WHERE id = ?
   PUBLISH "OrderCreated" to Kafka
 COMMIT
+```
 
-
-
-## 
 A failure (crash, network issue, broker down) after the DB commit but before publish → inconsistency
 → Downstream services never get notified, leading to lost events, stale views, or manual reconciliation.Distributed transactions (2PC) are complex, hurt performance, and are not supported by many modern brokers (e.g., Kafka before transactional producers).Core IdeaInstead of publishing directly to the broker inside the transaction:Write the business change and the outbound message(s) atomically inside the same local database transaction.
 Store outbound messages in a dedicated Outbox table (or collection in NoSQL).
